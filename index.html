@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Productive Planner Pro</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/png" href="favicon.png">
+</head>
+<body>
+
+<header class="header">
+  <div class="logo-wrapper">
+    <img src="logo.png" class="logo-img" alt="Logo">
+    <h1 class="brand">Productive Planner <span class="accent">Pro</span></h1>
+  </div>
+</header>
+
+<div class="container">
+
+  <section class="task-controls">
+    <input id="taskInput" type="text" placeholder="Enter task">
+    <input id="deadlineInput" type="datetime-local">
+
+    <select id="priority">
+      <option>Low</option>
+      <option selected>Medium</option>
+      <option>High</option>
+    </select>
+
+    <select id="category">
+      <option>Work</option>
+      <option>Personal</option>
+      <option>School</option>
+    </select>
+
+    <button id="addBtn">Add Task</button>
+  </section>
+
+  <section class="filters">
+    <button class="filter active" data-filter="all">All</button>
+    <button class="filter" data-filter="active">Active</button>
+    <button class="filter" data-filter="completed">Completed</button>
+    <button class="filter" data-filter="overdue">Overdue</button>
+  </section>
+
+  <section class="searchbox">
+    <input id="search" type="search" placeholder="Search tasks...">
+  </section>
+
+  <ul id="taskList" class="task-list"></ul>
+
+  <section class="summary">
+    <span id="remaining">0 tasks remaining</span>
+    <button id="selectAll">Toggle Completed</button>
+    <button id="clearCompleted">Clear Completed</button>
+  </section>
+</div>
