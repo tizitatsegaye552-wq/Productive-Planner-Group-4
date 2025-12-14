@@ -1,0 +1,70 @@
+body {
+  font-family: Poppins, sans-serif;
+  background: #0f1720;
+  color: white;
+  margin: 0;
+}
+
+/* HEADER */
+.header {
+  background: #111827;
+  padding: 20px;
+}
+
+.logo-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-img {
+  width: 40px;
+}
+
+.brand {
+  margin: 0;
+}
+
+.accent {
+  color: #8b5cf6;
+}
+
+/* MAIN */
+.container {
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+}
+
+.task-controls input,
+.task-controls select,
+.task-controls button {
+  padding: 10px;
+  margin: 5px;
+  border-radius: 8px;
+  border: none;
+}
+
+.task-controls button {
+  background: #8b5cf6;
+  color: white;
+  cursor: pointer;
+}
+
+.filters {
+  margin: 15px 0;
+}
+
+.filter {
+  padding: 8px 14px;
+  margin-right: 6px;
+  background: #1f2937;
+  border: none;
+  color: white;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.filter.active {
+  background: #8b5cf6;
+}
