@@ -1,87 +1,80 @@
-els.addBtn.onclick = () => {
-  if (!els.title.value.trim()) return;
+let tasks = JSON.parse(localStorage.getItem("tasks") || "[]");
+let filter = "all";
+let editingTask = null;
 
-  tasks.unshift({
-    title: els.title.value,
-    completed: false,
-    start: null,
-    deadline: els.deadline.value || null,
-    priority: els.priority.value,
-    category: els.category.value,
-    notified: false
-  });
-
-  els.title.value = "";
-  els.deadline.value = "";
-  save();
-  render();
+const els = {
+  title: document.getElementById("taskInput"),
+  deadline: document.getElementById("deadlineInput"),
+  priority: document.getElementById("priority"),
+  category: document.getElementById("category"),
+  addBtn: document.getElementById("addBtn"),
+  list: document.getElementById("taskList"),
+  search: document.getElementById("search"),
+  remaining: document.getElementById("remaining"),
+  filters: document.querySelectorAll(".filter"),
+  selectAll: document.getElementById("selectAll"),
+  clearCompleted: document.getElementById("clearCompleted")
 };
 
-function openEdit(task) {
-  editingTask = task;
-  editTitle.value = task.title;
-  editStart.value = task.start || "";
-  editReminder.value = task.deadline || "";
-  editPriority.value = task.priority;
-  editCategory.value = task.category;
-  reminderToggle.checked = !!task.deadline;
-  modal.classList.remove("hidden");
+const modal = document.getElementById("editModal");
+const editTitle = document.getElementById("editTitle");
+const editStart = document.getElementById("editStart");
+const editReminder = document.getElementById("editReminder");
+const editPriority = document.getElementById("editPriority");
+const editCategory = document.getElementById("editCategory");
+const reminderToggle = document.getElementById("reminderToggle");
+
+function save() {
+  localStorage.setItem("tasks", JSON.stringify(tasks));
 }
 
-document.getElementById("saveEdit").onclick = () => {
-  editingTask.title = editTitle.value;
-  editingTask.start = editStart.value || null;
-  editingTask.deadline = reminderToggle.checked ? editReminder.value : null;
-  editingTask.priority = editPriority.value;
-  editingTask.category = editCategory.value;
-  editingTask.notified = false;
-  save();
-  modal.classList.add("hidden");
-  render();
-};
+function render() {
+  els.list.innerHTML = "";
+  const query = els.search.value.toLowerCase();
 
-document.getElementById("cancelEdit").onclick = () =>
-  modal.classList.add("hidden");
+  const visible = tasks.filter(t => {
+    if (filter === "active") return !t.completed;
+    if (filter === "completed") return t.completed;
+    if (filter === "overdue")
+      return t.deadline && !t.completed && new Date(t.deadline) < new Date();
+    return true;
+  }).filter(t => t.title.toLowerCase().includes(query));
 
-els.selectAll.onclick = () => {
-  const allDone = tasks.every(t => t.completed);
-  tasks.forEach(t => (t.completed = !allDone));
-  save();
-  render();
-};
+  visible.forEach(task => {
+    const li = document.createElement("li");
+    li.className = "task-item";
+    if (task.completed) li.classList.add("completed");
+    if (task.deadline && !task.completed && new Date(task.deadline) < new Date())
+      li.classList.add("overdue");
 
-els.clearCompleted.onclick = () => {
-  tasks = tasks.filter(t => !t.completed);
-  save();
-  render();
-};
+    li.innerHTML = `
+      <div>
+        <input type="checkbox" ${task.completed ? "checked" : ""}>
+        ${task.title}
+        <br><small>${task.category} • ${task.priority}</small>
+      </div>
+      <div class="task-actions">
+        <button class="edit">✎</button>
+        <button class="delete">✖</button>
+      </div>
+    `;
 
-els.filters.forEach(btn =>
-  btn.onclick = () => {
-    els.filters.forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-    filter = btn.dataset.filter;
-    render();
-  }
-);
+    li.querySelector("input").onchange = () => {
+      task.completed = !task.completed;
+      save();
+      render();
+    };
 
-els.search.oninput = render;
+    li.querySelector(".edit").onclick = () => openEdit(task);
+    li.querySelector(".delete").onclick = () => {
+      tasks = tasks.filter(t => t !== task);
+      save();
+      render();
+    };
 
-Notification.requestPermission();
-setInterval(() => {
-  const now = new Date();
-  tasks.forEach(t => {
-    if (t.deadline && !t.notified && !t.completed) {
-      const diff = new Date(t.deadline) - now;
-      if (diff > 0 && diff <= 15 * 60000) {
-        new Notification("Task Reminder", {
-          body: `"${t.title}" is due soon`
-        });
-        t.notified = true;
-        save();
-      }
-    }
+    els.list.appendChild(li);
   });
-}, 60000);
 
-render();
+  els.remaining.textContent =
+    tasks.filter(t => !t.completed).length + " tasks remaining";
+}
